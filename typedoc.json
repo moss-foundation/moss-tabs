@@ -1,0 +1,8 @@
+{
+    "out": "typedocs",
+    "entryPoints": ["./src/index.ts"],
+    "exclude": ["**/_test/**/*.*", "**/index.ts"],
+    "disableOutputCheck": true,
+    "excludeExternals": true,
+    "excludePrivate": true
+}

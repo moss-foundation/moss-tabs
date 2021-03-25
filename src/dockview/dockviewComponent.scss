@@ -1,0 +1,71 @@
+.custom-dragging {
+    height: 24px;
+    line-height: 24px;
+    font-size: 11px;
+    width: 100px;
+    background-color: dodgerblue;
+    color: ghostwhite;
+    border-radius: 11px;
+    position: absolute;
+    padding-left: 10px;
+}
+
+.groupview {
+    &.active-group {
+        > .title-container > .tab-container > .tab {
+            &.active-tab {
+                background-color: var(--dv-active-tab-background-visible);
+                color: var(--dv-active-group-visible-panel-color);
+
+                .tab-action {
+                    background-color: var(
+                        --dv-active-group-visible-panel-color
+                    );
+                }
+            }
+            &.inactive-tab {
+                background-color: var(--dv-active-tab-background-hidden);
+                color: var(--dv-active-group-hidden-panel-color);
+
+                .tab-action {
+                    background-color: var(--dv-active-group-hidden-panel-color);
+                }
+            }
+        }
+    }
+    &.inactive-group {
+        > .title-container > .tab-container > .tab {
+            &.active-tab {
+                background-color: var(--dv-inactive-tab-background-visible);
+                color: var(--dv-inactive-group-visible-panel-color);
+
+                .tab-action {
+                    background-color: var(
+                        --dv-inactive-group-visible-panel-color
+                    );
+                }
+            }
+            &.inactive-tab {
+                background-color: var(--dv-inactive-tab-background-hidden);
+                color: var(--dv-inactive-group-hidden-panel-color);
+
+                .tab-action {
+                    background-color: var(
+                        --dv-inactive-group-hidden-panel-color
+                    );
+                }
+            }
+        }
+    }
+}
+
+/**
+ * when a tab is dragged we lose the above stylings because they are conditional on parent elements
+ * therefore we also set some stylings for the dragging event
+ **/
+.tab {
+    &.dragging {
+        background-color: var(--dv-active-tab-background-visible);
+        color: var(--dv-active-group-visible-panel-color);
+    }
+}
