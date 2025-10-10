@@ -1112,10 +1112,6 @@
   border-radius: 2px;
   background-color: var(--dv-icon-hover-background-color);
 }
-.dv-watermark {
-  display: flex;
-  height: 100%;
-}
 .dv-tabs-overflow-dropdown-default {
   height: 100%;
   color: var(--dv-activegroup-hiddenpanel-tab-color);
@@ -1226,4 +1222,8 @@
 }
 .dv-tabs-and-actions-container .dv-right-actions-container {
   display: flex;
+}
+.dv-watermark {
+  display: flex;
+  height: 100%;
 }
