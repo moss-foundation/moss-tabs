@@ -6,9 +6,9 @@
     "bugs": {
         "url": "https://github.com/mathuo/dockview/issues"
     },
-    "main": "./packages/dockview/dist/cjs/index.js",
-    "module": "./packages/dockview/dist/esm/index.js",
-    "types": "./packages/dockview/dist/cjs/index.d.ts",
+    "main": "./packages/dockview-core/dist/cjs/index.js",
+    "module": "./packages/dockview-core/dist/esm/index.js",
+    "types": "./packages/dockview-core/dist/cjs/index.d.ts",
     "files": [
         "packages/dockview/dist",
         "packages/dockview-core/dist"
