@@ -6,13 +6,12 @@
     "bugs": {
         "url": "https://github.com/mathuo/dockview/issues"
     },
-    "main": "./packages/dockview-react/dist/cjs/index.js",
-    "module": "./packages/dockview-react/dist/esm/index.js",
-    "types": "./packages/dockview-react/dist/cjs/index.d.ts",
+    "main": "./packages/dockview/dist/cjs/index.js",
+    "module": "./packages/dockview/dist/esm/index.js",
+    "types": "./packages/dockview/dist/cjs/index.d.ts",
     "files": [
         "packages/dockview/dist",
-        "packages/dockview-core/dist",
-        "packages/dockview-react/dist"
+        "packages/dockview-core/dist"
     ],
     "repository": {
         "type": "git",
@@ -26,7 +25,7 @@
     "scripts": {
         "build": "lerna run build --scope '{dockview-core,dockview,dockview-vue,dockview-react,dockview-angular}'",
         "build:bundle": "lerna run build:bundle --scope '{dockview-core,dockview,dockview-vue,dockview-react,dockview-angular}'",
-        "build:dockview": "lerna run build --scope '{dockview-core,dockview,dockview-react}'",
+        "build:dockview": "lerna run build --scope '{dockview-core,dockview}'",
         "clean": "lerna run clean",
         "docs": "typedoc && node scripts/docs.mjs",
         "lint": "eslint 'packages/*/src/**/*.{ts,tsx,js,jsx}'",
