@@ -61,8 +61,8 @@ function createBundle(format, options) {
 
     const plugins = [
         nodeResolve({
-            include: ['node_modules/dockview-core/**'],
-            resolveOnly: ['dockview-core'],
+            // Bundle dockview-core instead of treating it as external
+            preferBuiltins: false,
         }),
         typescript({
             tsconfig: 'tsconfig.esm.json',
@@ -80,6 +80,7 @@ function createBundle(format, options) {
         output['name'] = name;
     }
 
+    // Only externalize React dependencies, dockview-core will be bundled
     external.push('react', 'react-dom');
 
     if (format === 'umd') {

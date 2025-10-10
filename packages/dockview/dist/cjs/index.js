@@ -15,10 +15,10 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("dockview-core"), exports);
-__exportStar(require("./dockview/dockview"), exports);
 __exportStar(require("./dockview/defaultTab"), exports);
-__exportStar(require("./splitview/splitview"), exports);
+__exportStar(require("./dockview/dockview"), exports);
 __exportStar(require("./gridview/gridview"), exports);
 __exportStar(require("./paneview/paneview"), exports);
-__exportStar(require("./types"), exports);
 __exportStar(require("./react"), exports);
+__exportStar(require("./splitview/splitview"), exports);
+__exportStar(require("./types"), exports);
