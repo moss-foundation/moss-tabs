@@ -6,9 +6,12 @@
     "bugs": {
         "url": "https://github.com/mathuo/dockview/issues"
     },
+    "files": [
+        "packages/dockview/dist"
+    ],
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/mathuo/dockview.git"
+        "url": "git+https://github.   om/mathuo/dockview.git"
     },
     "license": "MIT",
     "author": "https://github.com/mathuo",
@@ -18,6 +21,7 @@
     "scripts": {
         "build": "lerna run build --scope '{dockview-core,dockview,dockview-vue,dockview-react,dockview-angular}'",
         "build:bundle": "lerna run build:bundle --scope '{dockview-core,dockview,dockview-vue,dockview-react,dockview-angular}'",
+        "build:dockview": "lerna run build --scope '{dockview-core,dockview}'",
         "clean": "lerna run clean",
         "docs": "typedoc && node scripts/docs.mjs",
         "lint": "eslint 'packages/*/src/**/*.{ts,tsx,js,jsx}'",
