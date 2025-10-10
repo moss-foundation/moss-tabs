@@ -7,7 +7,8 @@
         "url": "https://github.com/mathuo/dockview/issues"
     },
     "files": [
-        "packages/dockview/dist"
+        "packages/dockview/dist",
+        "packages/dockview-core/dist"
     ],
     "repository": {
         "type": "git",
