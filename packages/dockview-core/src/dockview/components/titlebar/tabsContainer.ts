@@ -1,23 +1,23 @@
+import { getPanelData } from '../../../dnd/dataTransfer';
+import { findRelativeZIndexParent, toggleClass } from '../../../dom';
+import { addDisposableListener, Emitter, Event } from '../../../events';
 import {
-    IDisposable,
     CompositeDisposable,
     Disposable,
+    IDisposable,
     MutableDisposable,
 } from '../../../lifecycle';
-import { addDisposableListener, Emitter, Event } from '../../../events';
-import { Tab } from '../tab/tab';
-import { DockviewGroupPanel } from '../../dockviewGroupPanel';
-import { VoidContainer } from './voidContainer';
-import { findRelativeZIndexParent, toggleClass } from '../../../dom';
-import { IDockviewPanel } from '../../dockviewPanel';
 import { DockviewComponent } from '../../dockviewComponent';
+import { DockviewGroupPanel } from '../../dockviewGroupPanel';
+import { IDockviewPanel } from '../../dockviewPanel';
 import { WillShowOverlayLocationEvent } from '../../events';
-import { getPanelData } from '../../../dnd/dataTransfer';
-import { Tabs } from './tabs';
+import { Tab } from '../tab/tab';
 import {
     createDropdownElementHandle,
     DropdownElement,
 } from './tabOverflowControl';
+import { Tabs } from './tabs';
+import { VoidContainer } from './voidContainer';
 
 export interface TabDropIndexEvent {
     readonly event: DragEvent;
@@ -220,6 +220,46 @@ export class TabsContainer
                         });
                     }
                 }
+            ),
+            addDisposableListener(
+                this.tabs.element,
+                'wheel',
+                (event) => {
+                    // Normalize wheel delta for lines vs pixels.
+                    function normalizeDelta(e: WheelEvent, axis: 'x' | 'y') {
+                        const delta = axis === 'x' ? e.deltaX : e.deltaY;
+                        // DOM_DELTA_LINE = 1 -> convert lines to pixels (~16px per line typical)
+                        if (e.deltaMode === 1) return delta * 16;
+                        return delta; // DOM_DELTA_PIXEL (0) or others
+                    }
+
+                    const canScrollHorizontally =
+                        this.tabs.element.scrollWidth >
+                        this.tabs.element.clientWidth;
+                    if (canScrollHorizontally && !event.shiftKey) {
+                        const absX = Math.abs(event.deltaX);
+                        const absY = Math.abs(event.deltaY);
+
+                        // Handle horizontal touchpad gestures (two-finger horizontal swipe)
+                        if (absX > absY && absX > 0) {
+                            const deltaX = normalizeDelta(event, 'x');
+                            this.tabs.element.scrollLeft += deltaX;
+                            event.preventDefault();
+                            return;
+                        }
+
+                        // Handle vertical touchpad gestures (two-finger vertical/diagonal swipe)
+                        // Convert vertical scrolling to horizontal for tab navigation
+                        if (absY > absX && absY > 0) {
+                            const deltaY = normalizeDelta(event, 'y');
+                            // Positive deltaY means user scrolled down -> move tabs right (increase scrollLeft)
+                            this.tabs.element.scrollLeft += deltaY;
+                            event.preventDefault();
+                            return;
+                        }
+                    }
+                },
+                { passive: false }
             )
         );
     }

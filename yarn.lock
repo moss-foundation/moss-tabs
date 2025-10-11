@@ -11268,6 +11268,7 @@ __metadata:
   dependencies:
     dockview-core: "npm:^4.9.0"
   peerDependencies:
+    dockview-core: ^4.9.0
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
   languageName: unknown
   linkType: soft
@@ -18026,6 +18027,7 @@ __metadata:
     "@vue/tsconfig": "npm:^0.5.1"
     concurrently: "npm:^8.2.2"
     cross-env: "npm:^7.0.3"
+    dockview: "npm:^4.9.0"
     eslint: "npm:^8.56.0"
     fs-extra: "npm:^11.2.0"
     gulp: "npm:^4.0.2"
