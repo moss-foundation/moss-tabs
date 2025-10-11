@@ -1,11 +1,11 @@
-import { CompositeDisposable, Disposable, MutableDisposable, } from '../../../lifecycle';
-import { addDisposableListener, Emitter } from '../../../events';
-import { VoidContainer } from './voidContainer';
-import { findRelativeZIndexParent, toggleClass } from '../../../dom';
-import { WillShowOverlayLocationEvent } from '../../events';
 import { getPanelData } from '../../../dnd/dataTransfer';
-import { Tabs } from './tabs';
+import { findRelativeZIndexParent, toggleClass } from '../../../dom';
+import { addDisposableListener, Emitter } from '../../../events';
+import { CompositeDisposable, Disposable, MutableDisposable, } from '../../../lifecycle';
+import { WillShowOverlayLocationEvent } from '../../events';
 import { createDropdownElementHandle, } from './tabOverflowControl';
+import { Tabs } from './tabs';
+import { VoidContainer } from './voidContainer';
 export class TabsContainer extends CompositeDisposable {
     get onTabDragStart() {
         return this.tabs.onTabDragStart;

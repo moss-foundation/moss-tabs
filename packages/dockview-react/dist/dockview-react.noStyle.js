@@ -5157,101 +5157,52 @@
         }
     }
 
-    class GroupDragHandler extends DragHandler {
-        constructor(element, accessor, group, disabled) {
-            super(element, disabled);
-            this.accessor = accessor;
-            this.group = group;
-            this.panelTransfer = LocalSelectionTransfer.getInstance();
-            this.addDisposables(addDisposableListener(element, 'pointerdown', (e) => {
-                if (e.shiftKey) {
-                    /**
-                     * You cannot call e.preventDefault() because that will prevent drag events from firing
-                     * but we also need to stop any group overlay drag events from occuring
-                     * Use a custom event marker that can be checked by the overlay drag events
-                     */
-                    quasiPreventDefault(e);
-                }
-            }, true));
-        }
-        isCancelled(_event) {
-            if (this.group.api.location.type === 'floating' && !_event.shiftKey) {
-                return true;
-            }
-            return false;
-        }
-        getData(dragEvent) {
-            const dataTransfer = dragEvent.dataTransfer;
-            this.panelTransfer.setData([new PanelTransfer(this.accessor.id, this.group.id, null)], PanelTransfer.prototype);
-            const style = window.getComputedStyle(this.el);
-            const bgColor = style.getPropertyValue('--dv-activegroup-visiblepanel-tab-background-color');
-            const color = style.getPropertyValue('--dv-activegroup-visiblepanel-tab-color');
-            if (dataTransfer) {
-                const ghostElement = document.createElement('div');
-                ghostElement.style.backgroundColor = bgColor;
-                ghostElement.style.color = color;
-                ghostElement.style.padding = '2px 8px';
-                ghostElement.style.height = '24px';
-                ghostElement.style.fontSize = '11px';
-                ghostElement.style.lineHeight = '20px';
-                ghostElement.style.borderRadius = '12px';
-                ghostElement.style.position = 'absolute';
-                ghostElement.style.pointerEvents = 'none';
-                ghostElement.style.top = '-9999px';
-                ghostElement.textContent = `Multiple Panels (${this.group.size})`;
-                addGhostImage(dataTransfer, ghostElement, { y: -10, x: 30 });
-            }
-            return {
-                dispose: () => {
-                    this.panelTransfer.clearData(PanelTransfer.prototype);
-                },
-            };
-        }
-    }
+    const createSvgElementFromPath = (params) => {
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttributeNS(null, 'height', params.height);
+        svg.setAttributeNS(null, 'width', params.width);
+        svg.setAttributeNS(null, 'viewBox', params.viewbox);
+        svg.setAttributeNS(null, 'aria-hidden', 'false');
+        svg.setAttributeNS(null, 'focusable', 'false');
+        svg.classList.add('dv-svg');
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttributeNS(null, 'd', params.path);
+        svg.appendChild(path);
+        return svg;
+    };
+    const createCloseButton = () => createSvgElementFromPath({
+        width: '11',
+        height: '11',
+        viewbox: '0 0 28 28',
+        path: 'M2.1 27.3L0 25.2L11.55 13.65L0 2.1L2.1 0L13.65 11.55L25.2 0L27.3 2.1L15.75 13.65L27.3 25.2L25.2 27.3L13.65 15.75L2.1 27.3Z',
+    });
+    const createExpandMoreButton = () => createSvgElementFromPath({
+        width: '11',
+        height: '11',
+        viewbox: '0 0 24 15',
+        path: 'M12 14.15L0 2.15L2.15 0L12 9.9L21.85 0.0499992L24 2.2L12 14.15Z',
+    });
+    const createChevronRightButton = () => createSvgElementFromPath({
+        width: '11',
+        height: '11',
+        viewbox: '0 0 15 25',
+        path: 'M2.15 24.1L0 21.95L9.9 12.05L0 2.15L2.15 0L14.2 12.05L2.15 24.1Z',
+    });
 
-    class VoidContainer extends CompositeDisposable {
-        get element() {
-            return this._element;
-        }
-        constructor(accessor, group) {
-            super();
-            this.accessor = accessor;
-            this.group = group;
-            this._onDrop = new Emitter();
-            this.onDrop = this._onDrop.event;
-            this._onDragStart = new Emitter();
-            this.onDragStart = this._onDragStart.event;
-            this._element = document.createElement('div');
-            this._element.className = 'dv-void-container';
-            this._element.draggable = !this.accessor.options.disableDnd;
-            toggleClass(this._element, 'dv-draggable', !this.accessor.options.disableDnd);
-            this.addDisposables(this._onDrop, this._onDragStart, addDisposableListener(this._element, 'pointerdown', () => {
-                this.accessor.doSetGroupActive(this.group);
-            }));
-            this.handler = new GroupDragHandler(this._element, accessor, group, !!this.accessor.options.disableDnd);
-            this.dropTarget = new Droptarget(this._element, {
-                acceptedTargetZones: ['center'],
-                canDisplayOverlay: (event, position) => {
-                    const data = getPanelData();
-                    if (data && this.accessor.id === data.viewId) {
-                        return true;
-                    }
-                    return group.model.canDisplayOverlay(event, position, 'header_space');
-                },
-                getOverrideTarget: () => { var _a; return (_a = group.model.dropTargetContainer) === null || _a === void 0 ? void 0 : _a.model; },
-            });
-            this.onWillShowOverlay = this.dropTarget.onWillShowOverlay;
-            this.addDisposables(this.handler, this.handler.onDragStart((event) => {
-                this._onDragStart.fire(event);
-            }), this.dropTarget.onDrop((event) => {
-                this._onDrop.fire(event);
-            }), this.dropTarget);
-        }
-        updateDragAndDropState() {
-            this._element.draggable = !this.accessor.options.disableDnd;
-            toggleClass(this._element, 'dv-draggable', !this.accessor.options.disableDnd);
-            this.handler.setDisabled(!!this.accessor.options.disableDnd);
-        }
+    function createDropdownElementHandle() {
+        const el = document.createElement('div');
+        el.className = 'dv-tabs-overflow-dropdown-default';
+        const text = document.createElement('span');
+        text.textContent = ``;
+        const icon = createChevronRightButton();
+        el.appendChild(icon);
+        el.appendChild(text);
+        return {
+            element: el,
+            update: (params) => {
+                text.textContent = `${params.tabs}`;
+            },
+        };
     }
 
     class Scrollbar extends CompositeDisposable {
@@ -5269,7 +5220,38 @@
             this.element.appendChild(scrollableElement);
             this.element.appendChild(this._horizontalScrollbar);
             this.addDisposables(addDisposableListener(this.element, 'wheel', (event) => {
-                this._scrollLeft += event.deltaY * Scrollbar.MouseWheelSpeed;
+                // Normalize wheel delta for lines vs pixels.
+                function normalizeDelta(e, axis) {
+                    const delta = axis === 'x' ? e.deltaX : e.deltaY;
+                    // DOM_DELTA_LINE = 1 -> convert lines to pixels (~16px per line typical)
+                    if (e.deltaMode === 1)
+                        return delta * 16;
+                    return delta; // DOM_DELTA_PIXEL (0) or others
+                }
+                const canScrollHorizontally = this.scrollableElement.scrollWidth >
+                    this.scrollableElement.clientWidth;
+                if (canScrollHorizontally && !event.shiftKey) {
+                    const absX = Math.abs(event.deltaX);
+                    const absY = Math.abs(event.deltaY);
+                    // Handle horizontal touchpad gestures (two-finger horizontal swipe)
+                    if (absX > absY && absX > 0) {
+                        const deltaX = normalizeDelta(event, 'x');
+                        this._scrollLeft += deltaX;
+                        this.calculateScrollbarStyles();
+                        event.preventDefault();
+                        return;
+                    }
+                    // Handle vertical touchpad gestures (two-finger vertical/diagonal swipe)
+                    // Convert vertical scrolling to horizontal for tab navigation
+                    if (absY > absX && absY > 0) {
+                        const deltaY = normalizeDelta(event, 'y');
+                        // Positive deltaY means user scrolled down -> move tabs right (increase scrollLeft)
+                        this._scrollLeft += deltaY;
+                        this.calculateScrollbarStyles();
+                        event.preventDefault();
+                        return;
+                    }
+                }
                 this.calculateScrollbarStyles();
             }), addDisposableListener(this._horizontalScrollbar, 'pointerdown', (event) => {
                 event.preventDefault();
@@ -5519,52 +5501,101 @@
         }
     }
 
-    const createSvgElementFromPath = (params) => {
-        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        svg.setAttributeNS(null, 'height', params.height);
-        svg.setAttributeNS(null, 'width', params.width);
-        svg.setAttributeNS(null, 'viewBox', params.viewbox);
-        svg.setAttributeNS(null, 'aria-hidden', 'false');
-        svg.setAttributeNS(null, 'focusable', 'false');
-        svg.classList.add('dv-svg');
-        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        path.setAttributeNS(null, 'd', params.path);
-        svg.appendChild(path);
-        return svg;
-    };
-    const createCloseButton = () => createSvgElementFromPath({
-        width: '11',
-        height: '11',
-        viewbox: '0 0 28 28',
-        path: 'M2.1 27.3L0 25.2L11.55 13.65L0 2.1L2.1 0L13.65 11.55L25.2 0L27.3 2.1L15.75 13.65L27.3 25.2L25.2 27.3L13.65 15.75L2.1 27.3Z',
-    });
-    const createExpandMoreButton = () => createSvgElementFromPath({
-        width: '11',
-        height: '11',
-        viewbox: '0 0 24 15',
-        path: 'M12 14.15L0 2.15L2.15 0L12 9.9L21.85 0.0499992L24 2.2L12 14.15Z',
-    });
-    const createChevronRightButton = () => createSvgElementFromPath({
-        width: '11',
-        height: '11',
-        viewbox: '0 0 15 25',
-        path: 'M2.15 24.1L0 21.95L9.9 12.05L0 2.15L2.15 0L14.2 12.05L2.15 24.1Z',
-    });
+    class GroupDragHandler extends DragHandler {
+        constructor(element, accessor, group, disabled) {
+            super(element, disabled);
+            this.accessor = accessor;
+            this.group = group;
+            this.panelTransfer = LocalSelectionTransfer.getInstance();
+            this.addDisposables(addDisposableListener(element, 'pointerdown', (e) => {
+                if (e.shiftKey) {
+                    /**
+                     * You cannot call e.preventDefault() because that will prevent drag events from firing
+                     * but we also need to stop any group overlay drag events from occuring
+                     * Use a custom event marker that can be checked by the overlay drag events
+                     */
+                    quasiPreventDefault(e);
+                }
+            }, true));
+        }
+        isCancelled(_event) {
+            if (this.group.api.location.type === 'floating' && !_event.shiftKey) {
+                return true;
+            }
+            return false;
+        }
+        getData(dragEvent) {
+            const dataTransfer = dragEvent.dataTransfer;
+            this.panelTransfer.setData([new PanelTransfer(this.accessor.id, this.group.id, null)], PanelTransfer.prototype);
+            const style = window.getComputedStyle(this.el);
+            const bgColor = style.getPropertyValue('--dv-activegroup-visiblepanel-tab-background-color');
+            const color = style.getPropertyValue('--dv-activegroup-visiblepanel-tab-color');
+            if (dataTransfer) {
+                const ghostElement = document.createElement('div');
+                ghostElement.style.backgroundColor = bgColor;
+                ghostElement.style.color = color;
+                ghostElement.style.padding = '2px 8px';
+                ghostElement.style.height = '24px';
+                ghostElement.style.fontSize = '11px';
+                ghostElement.style.lineHeight = '20px';
+                ghostElement.style.borderRadius = '12px';
+                ghostElement.style.position = 'absolute';
+                ghostElement.style.pointerEvents = 'none';
+                ghostElement.style.top = '-9999px';
+                ghostElement.textContent = `Multiple Panels (${this.group.size})`;
+                addGhostImage(dataTransfer, ghostElement, { y: -10, x: 30 });
+            }
+            return {
+                dispose: () => {
+                    this.panelTransfer.clearData(PanelTransfer.prototype);
+                },
+            };
+        }
+    }
 
-    function createDropdownElementHandle() {
-        const el = document.createElement('div');
-        el.className = 'dv-tabs-overflow-dropdown-default';
-        const text = document.createElement('span');
-        text.textContent = ``;
-        const icon = createChevronRightButton();
-        el.appendChild(icon);
-        el.appendChild(text);
-        return {
-            element: el,
-            update: (params) => {
-                text.textContent = `${params.tabs}`;
-            },
-        };
+    class VoidContainer extends CompositeDisposable {
+        get element() {
+            return this._element;
+        }
+        constructor(accessor, group) {
+            super();
+            this.accessor = accessor;
+            this.group = group;
+            this._onDrop = new Emitter();
+            this.onDrop = this._onDrop.event;
+            this._onDragStart = new Emitter();
+            this.onDragStart = this._onDragStart.event;
+            this._element = document.createElement('div');
+            this._element.className = 'dv-void-container';
+            this._element.draggable = !this.accessor.options.disableDnd;
+            toggleClass(this._element, 'dv-draggable', !this.accessor.options.disableDnd);
+            this.addDisposables(this._onDrop, this._onDragStart, addDisposableListener(this._element, 'pointerdown', () => {
+                this.accessor.doSetGroupActive(this.group);
+            }));
+            this.handler = new GroupDragHandler(this._element, accessor, group, !!this.accessor.options.disableDnd);
+            this.dropTarget = new Droptarget(this._element, {
+                acceptedTargetZones: ['center'],
+                canDisplayOverlay: (event, position) => {
+                    const data = getPanelData();
+                    if (data && this.accessor.id === data.viewId) {
+                        return true;
+                    }
+                    return group.model.canDisplayOverlay(event, position, 'header_space');
+                },
+                getOverrideTarget: () => { var _a; return (_a = group.model.dropTargetContainer) === null || _a === void 0 ? void 0 : _a.model; },
+            });
+            this.onWillShowOverlay = this.dropTarget.onWillShowOverlay;
+            this.addDisposables(this.handler, this.handler.onDragStart((event) => {
+                this._onDragStart.fire(event);
+            }), this.dropTarget.onDrop((event) => {
+                this._onDrop.fire(event);
+            }), this.dropTarget);
+        }
+        updateDragAndDropState() {
+            this._element.draggable = !this.accessor.options.disableDnd;
+            toggleClass(this._element, 'dv-draggable', !this.accessor.options.disableDnd);
+            this.handler.setDisabled(!!this.accessor.options.disableDnd);
+        }
     }
 
     class TabsContainer extends CompositeDisposable {

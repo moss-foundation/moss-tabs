@@ -27,14 +27,14 @@ var __values = (this && this.__values) || function(o) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TabsContainer = void 0;
-var lifecycle_1 = require("../../../lifecycle");
-var events_1 = require("../../../events");
-var voidContainer_1 = require("./voidContainer");
-var dom_1 = require("../../../dom");
-var events_2 = require("../../events");
 var dataTransfer_1 = require("../../../dnd/dataTransfer");
-var tabs_1 = require("./tabs");
+var dom_1 = require("../../../dom");
+var events_1 = require("../../../events");
+var lifecycle_1 = require("../../../lifecycle");
+var events_2 = require("../../events");
 var tabOverflowControl_1 = require("./tabOverflowControl");
+var tabs_1 = require("./tabs");
+var voidContainer_1 = require("./voidContainer");
 var TabsContainer = /** @class */ (function (_super) {
     __extends(TabsContainer, _super);
     function TabsContainer(accessor, group) {

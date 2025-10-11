@@ -1,10 +1,10 @@
-import { IDisposable, CompositeDisposable } from '../../../lifecycle';
 import { Event } from '../../../events';
-import { Tab } from '../tab/tab';
+import { CompositeDisposable, IDisposable } from '../../../lifecycle';
+import { DockviewComponent } from '../../dockviewComponent';
 import { DockviewGroupPanel } from '../../dockviewGroupPanel';
 import { IDockviewPanel } from '../../dockviewPanel';
-import { DockviewComponent } from '../../dockviewComponent';
 import { WillShowOverlayLocationEvent } from '../../events';
+import { Tab } from '../tab/tab';
 export interface TabDropIndexEvent {
     readonly event: DragEvent;
     readonly index: number;

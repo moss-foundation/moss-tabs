@@ -33,7 +33,38 @@ var Scrollbar = /** @class */ (function (_super) {
         _this.element.appendChild(scrollableElement);
         _this.element.appendChild(_this._horizontalScrollbar);
         _this.addDisposables((0, events_1.addDisposableListener)(_this.element, 'wheel', function (event) {
-            _this._scrollLeft += event.deltaY * Scrollbar.MouseWheelSpeed;
+            // Normalize wheel delta for lines vs pixels.
+            function normalizeDelta(e, axis) {
+                var delta = axis === 'x' ? e.deltaX : e.deltaY;
+                // DOM_DELTA_LINE = 1 -> convert lines to pixels (~16px per line typical)
+                if (e.deltaMode === 1)
+                    return delta * 16;
+                return delta; // DOM_DELTA_PIXEL (0) or others
+            }
+            var canScrollHorizontally = _this.scrollableElement.scrollWidth >
+                _this.scrollableElement.clientWidth;
+            if (canScrollHorizontally && !event.shiftKey) {
+                var absX = Math.abs(event.deltaX);
+                var absY = Math.abs(event.deltaY);
+                // Handle horizontal touchpad gestures (two-finger horizontal swipe)
+                if (absX > absY && absX > 0) {
+                    var deltaX = normalizeDelta(event, 'x');
+                    _this._scrollLeft += deltaX;
+                    _this.calculateScrollbarStyles();
+                    event.preventDefault();
+                    return;
+                }
+                // Handle vertical touchpad gestures (two-finger vertical/diagonal swipe)
+                // Convert vertical scrolling to horizontal for tab navigation
+                if (absY > absX && absY > 0) {
+                    var deltaY = normalizeDelta(event, 'y');
+                    // Positive deltaY means user scrolled down -> move tabs right (increase scrollLeft)
+                    _this._scrollLeft += deltaY;
+                    _this.calculateScrollbarStyles();
+                    event.preventDefault();
+                    return;
+                }
+            }
             _this.calculateScrollbarStyles();
         }), (0, events_1.addDisposableListener)(_this._horizontalScrollbar, 'pointerdown', function (event) {
             event.preventDefault();
