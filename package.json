@@ -30,7 +30,7 @@
     "scripts": {
         "build": "lerna run build --scope '{dockview-core,dockview,dockview-vue,dockview-react,dockview-angular}'",
         "build:bundle": "lerna run build:bundle --scope '{dockview-core,dockview,dockview-vue,dockview-react,dockview-angular}'",
-        "build:react": "lerna run build --scope '{dockview-core,dockview,dockview-react}'",
+        "build:react": "lerna run build:bundle --scope '{dockview-core,dockview,dockview-react}'",
         "clean": "lerna run clean",
         "docs": "typedoc && node scripts/docs.mjs",
         "lint": "eslint 'packages/*/src/**/*.{ts,tsx,js,jsx}'",
