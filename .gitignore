@@ -14,3 +14,11 @@ yarn-error.log
 /build
 /docs/
 /generated/
+
+.yarn/*
+!.yarn/cache
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
