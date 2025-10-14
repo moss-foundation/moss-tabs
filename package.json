@@ -6,8 +6,8 @@
     "bugs": {
         "url": "https://github.com/mathuo/dockview/issues"
     },
-    "main": "./packages/dockview/dockview.js",
-    "module": "./packages/dockview/dockview.esm.js",
+    "main": "./packages/dockview/dist/dockview.js",
+    "module": "./packages/dockview/dist/dockview.esm.js",
     "types": "./packages/dockview/dist/index.d.ts",
     "files": [
         "packages/dockview/dist",
