@@ -6,18 +6,13 @@
     "bugs": {
         "url": "https://github.com/mathuo/dockview/issues"
     },
-    "main": "./packages/dockview-react/dist/cjs/index.js",
-    "module": "./packages/dockview-react/dist/esm/index.js",
-    "types": "./packages/dockview-react/dist/cjs/index.d.ts",
+    "main": "./packages/dockview/dockview.js",
+    "module": "./packages/dockview/dockview.esm.js",
+    "types": "./packages/dockview/dist/index.d.ts",
     "files": [
         "packages/dockview/dist",
-        "packages/dockview-core/dist",
-        "packages/dockview-react/dist",
         "README.md"
     ],
-    "dependencies": {
-        "dockview": "^4.9.0"
-    },
     "repository": {
         "type": "git",
         "url": "git+https://github.сom/mathuo/dockview.git"
