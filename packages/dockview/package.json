@@ -35,7 +35,7 @@
     "author": "https://github.com/mathuo",
     "main": "./dist/cjs/index.js",
     "module": "./dist/esm/index.js",
-    "types": "./dist/cjs/index.d.ts",
+    "types": "./dist/index.d.ts",
     "files": [
         "dist",
         "README.md"
@@ -53,7 +53,8 @@
         "test:cov": "cross-env ../../node_modules/.bin/jest --selectProjects dockview --coverage"
     },
     "dependencies": {
-        "dockview-core": "^4.9.0"
+        "dockview-core": "^4.9.0",
+        "rollup-plugin-dts": "^6.2.3"
     },
     "peerDependencies": {
         "dockview-core": "^4.9.0",

@@ -5,6 +5,7 @@ const typescript = require('@rollup/plugin-typescript');
 const terser = require('@rollup/plugin-terser');
 const postcss = require('rollup-plugin-postcss');
 const nodeResolve = require('@rollup/plugin-node-resolve');
+const { dts } = require('rollup-plugin-dts');
 
 const { name, version, homepage, license } = require('./package.json');
 const main = join(__dirname, './scripts/rollupEntryTarget.ts');
@@ -65,6 +66,14 @@ function createBundle(format, options) {
         }),
         typescript({
             tsconfig: 'tsconfig.esm.json',
+            // Ensure declaration files are generated
+            declaration: true,
+            declarationDir: join(outputDir, 'types'), // Output .d.ts files to dist/types
+            // Avoid duplicating declarations for multiple bundles
+            // Only generate declarations for one bundle to avoid conflicts
+            ...(format === 'esm' && !isMinified && withStyles
+                ? {}
+                : { noEmit: true }),
         }),
     ];
 
@@ -94,6 +103,32 @@ function createBundle(format, options) {
     };
 }
 
+// Create a separate bundle for TypeScript declarations that includes dependency types
+function createDtsBundle() {
+    return {
+        input: join(__dirname, './src/index.ts'),
+        output: {
+            file: join(outputDir, 'index.d.ts'),
+            format: 'esm',
+        },
+        plugins: [
+            dts({
+                // This will bundle types from dependencies
+                respectExternal: false,
+                // Include types from dockview-core and other dependencies
+                compilerOptions: {
+                    baseUrl: '.',
+                    paths: {
+                        'dockview-core': ['../dockview-core/src'],
+                        'dockview-core/*': ['../dockview-core/src/*'],
+                    },
+                },
+            }),
+        ],
+        external: [], // Don't treat anything as external - bundle everything
+    };
+}
+
 module.exports = [
     // amd
     createBundle('amd', { withStyles: false, isMinified: false }),
@@ -108,6 +143,8 @@ module.exports = [
     // cjs
     createBundle('cjs', { withStyles: true, isMinified: false }),
     // esm
-    createBundle('esm', { withStyles: true, isMinified: false }),
+    createBundle('esm', { withStyles: true, isMinified: false }), // Declarations generated here
     createBundle('esm', { withStyles: true, isMinified: true }),
+    // TypeScript declarations bundle
+    createDtsBundle(),
 ];
