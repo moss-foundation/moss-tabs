@@ -4,8 +4,9 @@ This is a fork of the [Dockview library](https://github.com/mathuo/dockview).
 
 ## Key Differences
 
--   Horizontal tab scrolling with touchpad support
+-   In `packages/dockview` rollup now generates a `index.d.ts` file with the types of a package and all of it's dependencies
 -   The monorepo now exports from `packages/dockview-react/dist`
+-   Horizontal tab scrolling with touchpad support
 
 ## Development
 
